@@ -385,20 +385,8 @@ async def websocket_stream(ws: WebSocket) -> None:
     service: StreamingTTSService = app.state.tts_service
     lock: asyncio.Lock = app.state.websocket_lock
 
-    if lock.locked():
-        busy_message = {
-            "type": "log",
-            "event": "backend_busy",
-            "data": {"message": "Please wait for the other requests to complete."},
-            "timestamp": get_timestamp(),
-        }
-        print("Please wait for the other requests to complete.")
-        try:
-            await ws.send_text(json.dumps(busy_message))
-        except Exception:
-            pass
-        await ws.close(code=1013, reason="Service busy")
-        return
+    service: StreamingTTSService = app.state.tts_service
+    lock: asyncio.Lock = app.state.websocket_lock
 
     acquired = False
     try:
